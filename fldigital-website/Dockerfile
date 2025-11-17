@@ -1,8 +1,19 @@
+# ---- Build Stage ----
+FROM eclipse-temurin:17-jdk AS build
+
+WORKDIR /app
+
+COPY pom.xml .
+COPY src ./src
+
+RUN ./mvnw -q -e -DskipTests package || mvn -q -e -DskipTests package
+
+# ---- Run Stage ----
 FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-COPY target/fldigital-website-1.0.0.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
