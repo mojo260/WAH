@@ -1,12 +1,15 @@
 # ---- Build Stage ----
 FROM eclipse-temurin:17-jdk AS build
 
+# Install Maven (because mvnw does not exist in your project)
+RUN apt-get update && apt-get install -y maven
+
 WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
 
-RUN ./mvnw -q -e -DskipTests package || mvn -q -e -DskipTests package
+RUN mvn -q -e -DskipTests package
 
 # ---- Run Stage ----
 FROM eclipse-temurin:17-jre
